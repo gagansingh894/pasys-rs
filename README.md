@@ -6,16 +6,16 @@
 
 ## Project Structure
 
-- `ledger/` – Rust library with core ledger logic (accounts, transactions, balances, idempotency, validation)
-- `transactions-api/` – Rust library for HTTP/gRPC API servers using `ledger` as a dependency
-- `pasys/` – CLI application to start the system, interact with APIs, and run administrative tasks
+- `ledger` – library with core ledger logic (accounts, transactions, balances, idempotency, validation)
+- `transactions-api` – library for HTTP/gRPC API servers using `ledger` as a dependency
+- `pasys` – CLI application to start the system, interact with APIs, and run administrative tasks
 
 ---
 
 ## Features
 
 - ACID double-entry ledger for correctness
-- Event-driven architecture for asynchronous settlement and fraud detection
+- Event-driven architecture for asynchronous reconciliation workflows
 - Idempotency, reconciliation, and refund support
 - Modular Rust workspace for maintainable and testable code
 
