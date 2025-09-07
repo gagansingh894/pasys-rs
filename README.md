@@ -5,7 +5,7 @@
 
 [//]: # (![logo.png]&#40;docs/logo.png&#41;)
 
-<img src="docs/logo.png" alt="PaSys Logo" width="400" height="400" style="border-radius:5%;">
+<img src="docs/logo.png" alt="PaSys Logo" width="200" height="200" style="border-radius:5%;">
 
 ![Status](https://img.shields.io/badge/Status-In%20Progress-yellow)
 
