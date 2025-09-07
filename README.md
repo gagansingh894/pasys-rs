@@ -160,18 +160,24 @@ flowchart TD
 
 ---
 
-## Project Structure - In Progress
+## Project Structure
 
-- `ledger` – library with core ledger logic (accounts, transactions, balances, idempotency, validation)
-- `transactions-api` – library for HTTP/gRPC API servers using `ledger` as a dependency
-- `pasys` – CLI application to start the system, interact with APIs, and run administrative tasks
+- `ledger-core` – library crate with core ledger logic: accounts, transactions, balances, idempotency, validation.
+- `transactions-api` – HTTP service exposed to external clients and applications.
+- `ledger` – gRPC ledger service using `ledger-core`.
+- `ledger-consumer` – kafka consumer applying asynchronous events to the ledger database.
+- `fraud-detector` – kafka consumer for real-time fraud detection using ML models backed by `j.a.m.s`
+- `settlement-processor` – kafka consumer processing settlement events with PSP.
+- `refund-processor` – kafka consumer processing refunds automatically or manually.
+- `pasys` – CLI application to start the system, interact with APIs, and run administrative tasks.
+- `docs` – Documentation and assets (e.g., logo).
 
 ---
 
 ## Tech Stack & Concepts Demonstrated
-- Rust (Ledger Library, gRPC & HTTP APIs, Kafka Consumers)
-- gRPC (Ledger Service for internal communication)
-- HTTP (Transactions API for external clients / CLI)
-- Postgres (Ledger Database)
-- Kafka (Event-driven design, asynchronous flows)
+- Rust: Ledger Library, gRPC & HTTP APIs, Kafka Consumers
+- gRPC: Ledger Service for internal communication
+- HTTP: Transactions API for external clients / CLI
+- Postgres: Ledger Database
+- Kafka: Event-driven design, asynchronous flows
 - Finance-grade reliability: double-entry ledger, idempotency, reconciliation, refund handling
