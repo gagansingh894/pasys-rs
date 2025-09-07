@@ -3,11 +3,31 @@
 version = 3
 
 [[package]]
+name = "fraud-detector"
+version = "0.1.0"
+
+[[package]]
 name = "ledger"
 version = "0.1.0"
 
 [[package]]
+name = "ledger-consumer"
+version = "0.1.0"
+
+[[package]]
+name = "ledger-core"
+version = "0.1.0"
+
+[[package]]
 name = "pasys"
+version = "0.1.0"
+
+[[package]]
+name = "refund-processor"
+version = "0.1.0"
+
+[[package]]
+name = "settlement-processor"
 version = "0.1.0"
 
 [[package]]
