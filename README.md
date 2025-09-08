@@ -33,14 +33,18 @@
 
 ```mermaid
 flowchart TD
-    POSTMAN["Postman / API Client"]
+    POSTMAN["Postman / Client"]
     PASYS_CLI["PaSys CLI (Admin Tool)"]
-    API["Transactions API (HTTP)"]
+    API["PaySys API (HTTP)"]
+    
+    ACCOUNTS["Account Service (gRPC)"]
+    ACCOUNTS_DB["Accounts Database (Postgres)"]
 
     LEDGER["Ledger Service (gRPC)"]
     LEDGER_DB["Ledger Database (Postgres)"]
     PSP["PSP / LocalStripe"]
 
+    ACCOUNTS_EVENTS["Kafka Topic: accounts_events"]
     TX_EVENTS["Kafka Topic: transaction_events"]
     SETTLE_EVENTS["Kafka Topic: settlement_result_events"]
     FRAUD_EVENTS["Kafka Topic: fraud_detected_events"]
@@ -59,6 +63,12 @@ flowchart TD
     POSTMAN --> API
     PASYS_CLI --> API
     API --> LEDGER
+    API --> ACCOUNTS
+    
+    %% Accounts interactions
+    ACCOUNTS --> ACCOUNTS_DB
+    ACCOUNTS --> ACCOUNTS_EVENTS
+    ACCOUNTS_EVENTS --> LEDGER_CONSUMER
 
     %% Ledger interactions
     LEDGER --> LEDGER_DB
@@ -162,14 +172,18 @@ flowchart TD
 
 ## Project Structure
 
-- `ledger-core` – library crate with core ledger logic: accounts, transactions, balances, idempotency, validation.
-- `transactions-api` – HTTP service exposed to external clients and applications.
-- `ledger` – gRPC ledger service using `ledger-core`.
+- `pasys-core` – library crate with core ledger logic: accounts, transactions, balances, idempotency, validation.
+- `pasys-api` – HTTP service exposed to external clients and applications.
+- `accounts-proto`: library crate for generated rust code for protos defined in `proto/paysys/v1/accounts.proto`
+- `ledger-proto`: library crate for generated rust code for protos defined in `proto/paysys/v1/ledger.proto`
+- `accounts`: gRPC accounts service for account management using `accounts-proto` and `pasysy-core` 
+- `ledger` – gRPC ledger service using `ledger-proto` and `pasys-core`.
 - `ledger-consumer` – kafka consumer applying asynchronous events to the ledger database.
 - `fraud-detector` – kafka consumer for real-time fraud detection using ML models backed by `j.a.m.s`
 - `settlement-processor` – kafka consumer processing settlement events with PSP.
 - `refund-processor` – kafka consumer processing refunds automatically or manually.
 - `pasys` – CLI application to start the system, interact with APIs, and run administrative tasks.
+- `protos` - Proto files for the project  
 - `docs` – Documentation and assets (e.g., logo).
 
 ---
