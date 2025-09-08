@@ -1,13 +1,8 @@
+version: '3.8'
+
 networks:
   paysys:
-    external: true
-    name: paysys
-
-volumes:
-  postgres_data:
-  kafka1_data:
-  kafka2_data:
-  kafka3_data:
+    driver: bridge
 
 services:
   ledger-db:
@@ -28,7 +23,7 @@ services:
       retries: 5
       start_period: 10s
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ./build/postgres:/var/lib/postgresql/data
 
   kafka1:
     image: bitnami/kafka:4.0
@@ -51,7 +46,7 @@ services:
       - KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR=3
       - KAFKA_AUTO_CREATE_TOPICS_ENABLE=true
     volumes:
-      - kafka1_data:/bitnami/kafka
+      - ./build/kafka1:/bitnami/kafka
 
   kafka2:
     image: bitnami/kafka:4.0
@@ -74,7 +69,7 @@ services:
       - KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR=3
       - KAFKA_AUTO_CREATE_TOPICS_ENABLE=true
     volumes:
-      - kafka2_data:/bitnami/kafka
+      - ./build/kafka2:/bitnami/kafka
 
   kafka3:
     image: bitnami/kafka:4.0
@@ -97,11 +92,13 @@ services:
       - KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR=3
       - KAFKA_AUTO_CREATE_TOPICS_ENABLE=true
     volumes:
-      - kafka3_data:/bitnami/kafka
+      - ./build/kafka3:/bitnami/kafka
 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
     container_name: kafka-ui
+    networks:
+      - paysys
     environment:
       - KAFKA_CLUSTERS_0_NAME=local
       - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka1:9092,kafka2:9092,kafka3:9092
@@ -111,5 +108,11 @@ services:
       - kafka1
       - kafka2
       - kafka3
+
+  localstripe:
+    image: adrienverge/localstripe:1.15.9
+    container_name: localstripe
     networks:
       - paysys
+    ports:
+      - "8420:8420"
