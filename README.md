@@ -105,47 +105,55 @@ flowchart TD
 
 ### 1. External Clients / Admin Tools
 - **Postman / API Client**: Simulates external users sending transaction requests.
-- **PaSys CLI**: Admin tool for managing transactions, refunds, or triggering reconciliation.
-- Both interact with the **Transactions API (HTTP)**.
+- **PaSys CLI**: Admin tool for managing transactions, accounts, refunds, or triggering reconciliation.
+- Both interact with the **PaySys API (HTTP)**.
 
-### 2. Transactions API
-- Exposes **HTTP endpoints** for transaction requests.
-- Sends requests to the **Ledger Service (gRPC)** for processing.
-- Acts as the entry point into the system.
+### 2. PaySys API (HTTP)
+- Exposes **HTTP endpoints** for transaction and account operations.
+- Sends requests to backend **gRPC services**:
+  - `Ledger Service` → handles ledger operations
+  - `Accounts Service` → manages account creation and lookups
+- Performs input validation, authentication, and request orchestration.
+- Acts as the **external entry point** into the system.
 
-### 3. Ledger Service (gRPC)
-- Core of the system, responsible for **ledger operations**.
-- Uses **Postgres** as the source of truth (double-entry ledger).
-- Publishes **transaction events to Kafka** for asynchronous processing.
+### 3. Accounts Service (gRPC)
+- Responsible for **creating and querying accounts**.
+- Publishes **account events** to Kafka (`accounts_events`) when accounts are created or updated.
+- The **Ledger Consumer** listens to these events to maintain account state in the ledger database.
 
-### 4. Kafka Topics / Event Bus
+### 4. Ledger Service (gRPC)
+- Core of the system, responsible for **ledger operations** (double-entry bookkeeping).
+- Uses **Ledger Database (Postgres)** as the source of truth.
+- Publishes **transaction events** to Kafka for asynchronous processing.
+
+### 5. Kafka Topics / Event Bus
 - Central messaging system for asynchronous flows:
-    - `transaction_events` → for settlement and fraud detection
-    - `settlement_result_events` → results of settlement
-    - `fraud_detected_events` → fraud alerts
-    - `reconciliation_events` → reconciliation results
-    - `refund_events` → refund requests
-    - `analytics_events` → for reporting / ML pipelines
+  - `accounts_events` → account creation/updates
+  - `transaction_events` → new transactions for settlement and fraud detection
+  - `settlement_result_events` → results of settlement processing
+  - `fraud_detected_events` → fraud alerts
+  - `reconciliation_events` → reconciliation results
+  - `refund_events` → refund requests
+  - `analytics_events` → for reporting / ML pipelines
 
-### 5. Workers / Consumers
-- **Settlement Worker**: Interacts with PSP / LocalStripe to validate and settle transactions.
-- **Fraud Detection Worker**: Monitors events for suspicious activity.
-- **Reconciliation Pipeline**: Reads ledger DB and PSP data, identifies discrepancies, and publishes reconciliation events.
-- **Ledger Consumer**: Applies all asynchronous events to the ledger DB, triggers refunds, and publishes analytics.
+### 6. Workers / Consumers
+- **Ledger Consumer**: Maintains ledger DB by applying account and transaction events; triggers refunds; publishes analytics events.
+- **Settlement Worker**: Interacts with PSP / LocalStripe to validate and settle transactions; publishes results to Kafka.
+- **Fraud Detection Worker**: Monitors transaction events for suspicious activity; publishes alerts.
+- **Reconciliation Pipeline**: Reads ledger DB + PSP data, identifies discrepancies, and publishes reconciliation events.
 - **Refund Handler**: Processes refunds automatically or flags for manual review via PSP.
-- **Analytics**: Consumes events for reporting or ML pipelines.
+- **Analytics**: Consumes events for reporting, dashboards, or ML pipelines.
 
-### 6. Ledger Database
-- Central store for **all transaction records, balances, and status updates**.
-- Updated both **synchronously by Ledger Service** and **asynchronously via Ledger Consumer**.
+### 7. Databases
+- **Ledger Database**: Stores **all transactions, balances, statuses, and account snapshots**. Updated synchronously by Ledger Service and asynchronously by Ledger Consumer.
+- **Accounts Database**: Stores **authoritative account information**, created by Accounts Service. Events propagate to the ledger asynchronously.
 
-
-### Summary
-1. Client submits transaction → API → Ledger Service → Ledger DB & Kafka.
-2. Settlement & Fraud workers process transaction events → produce results to Kafka.
-3. Ledger Consumer applies events → updates ledger DB, triggers refunds if needed.
-4. Reconciliation periodically reads ledger DB + PSP → publishes reconciliation events → Ledger Consumer updates ledger.
-5. Analytics consumes events for reporting / ML.
+### Summary Flow
+1. Client submits transaction or account request → PaySys API → appropriate gRPC service → databases & Kafka events.
+2. Accounts Service emits `accounts_events` → Ledger Consumer updates ledger DB.
+3. Ledger Service emits `transaction_events` → Settlement & Fraud Workers process and produce results → Ledger Consumer updates ledger DB and triggers refunds.
+4. Reconciliation periodically reads ledger DB + PSP → produces `reconciliation_events` → Ledger Consumer updates ledger.
+5. Analytics consumes events for reporting and ML pipelines.
 
 #### Transaction Status Lifecycle
 
