@@ -1,7 +1,7 @@
 version: '3.8'
 
 networks:
-  paysys:
+  pasys:
     driver: bridge
 
 services:
@@ -15,7 +15,7 @@ services:
     ports:
       - "5432:5432"
     networks:
-      - paysys
+      - pasys
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U user -d ledger_db"]
       interval: 5s
@@ -23,7 +23,27 @@ services:
       retries: 5
       start_period: 10s
     volumes:
-      - ./build/postgres:/var/lib/postgresql/data
+      - ./pasys/ledger/postgres:/var/lib/postgresql/data
+
+  accounts-db:
+    image: postgres:15
+    container_name: accounts-db
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=user123
+      - POSTGRES_DB=accounts_db
+    ports:
+      - "5433:5432"
+    networks:
+      - pasys
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d ledger_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    volumes:
+      - ./pasys/accounts/postgres:/var/lib/postgresql/data
 
   kafka1:
     image: bitnami/kafka:4.0
@@ -31,7 +51,7 @@ services:
     ports:
       - "9094:9094"
     networks:
-      - paysys
+      - pasys
     environment:
       - KAFKA_CFG_NODE_ID=1
       - KAFKA_CFG_PROCESS_ROLES=broker,controller
@@ -46,7 +66,7 @@ services:
       - KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR=3
       - KAFKA_AUTO_CREATE_TOPICS_ENABLE=true
     volumes:
-      - ./build/kafka1:/bitnami/kafka
+      - ./pasys/kafka1:/bitnami/kafka
 
   kafka2:
     image: bitnami/kafka:4.0
@@ -54,7 +74,7 @@ services:
     ports:
       - "9095:9095"
     networks:
-      - paysys
+      - pasys
     environment:
       - KAFKA_CFG_NODE_ID=2
       - KAFKA_CFG_PROCESS_ROLES=broker,controller
@@ -69,7 +89,7 @@ services:
       - KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR=3
       - KAFKA_AUTO_CREATE_TOPICS_ENABLE=true
     volumes:
-      - ./build/kafka2:/bitnami/kafka
+      - ./pasys/kafka2:/bitnami/kafka
 
   kafka3:
     image: bitnami/kafka:4.0
@@ -77,7 +97,7 @@ services:
     ports:
       - "9096:9096"
     networks:
-      - paysys
+      - pasys
     environment:
       - KAFKA_CFG_NODE_ID=3
       - KAFKA_CFG_PROCESS_ROLES=broker,controller
@@ -92,13 +112,13 @@ services:
       - KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR=3
       - KAFKA_AUTO_CREATE_TOPICS_ENABLE=true
     volumes:
-      - ./build/kafka3:/bitnami/kafka
+      - ./pasys/kafka3:/bitnami/kafka
 
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
     container_name: kafka-ui
     networks:
-      - paysys
+      - pasys
     environment:
       - KAFKA_CLUSTERS_0_NAME=local
       - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka1:9092,kafka2:9092,kafka3:9092
@@ -113,6 +133,6 @@ services:
     image: adrienverge/localstripe:1.15.9
     container_name: localstripe
     networks:
-      - paysys
+      - pasys
     ports:
       - "8420:8420"
