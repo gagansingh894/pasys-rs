@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "googleapis/google/type/money.proto";
+
+package ledger_v1;
+
+// Ledger gRPC service exposing core operations
+service Ledger {
+  // Simple health check endpoint
+  rpc HealthCheck(google.protobuf.Empty) returns (google.protobuf.Empty);
+
+  // Create a new transaction in the ledger
+  rpc CreateTransaction(CreateTransactionRequest) returns (CreateTransactionResponse);
+}
+
+// Enum for the transaction status
+enum TransactionStatus {
+  TRANSACTION_STATUS_UNSPECIFIED = 0;           // Default value, should not be used in practice
+  TRANSACTION_STATUS_INIT = 1;                  // Transaction created but not yet processed
+  TRANSACTION_STATUS_PENDING = 2;               // Transaction is pending settlement with PSP
+  TRANSACTION_STATUS_SUCCESS = 3;               // Transaction completed successfully
+  TRANSACTION_STATUS_FAILED = 4;                // Transaction failed due to validation, insufficient funds, or PSP error
+  TRANSACTION_STATUS_FRAUD = 5;                 // Transaction flagged as potential fraud
+  TRANSACTION_STATUS_REFUND = 6;                // Refund process initiated
+  TRANSACTION_STATUS_REFUNDED = 7;              // Refund successfully completed
+}
+
+// Request message for creating a transaction
+message CreateTransactionRequest {
+  // id is client-provided ID for tracking (not idempotency)
+  string id = 1;
+  // debit_account_id is the ledger account from which money is being debited (source of funds)
+  string debit_account_id = 2;
+  // credit_account_id is the ledger account to which money is being credited (destination of funds)
+  string credit_account_id = 3;
+  // amount is the amount to transfer including currency.
+  // Example: { units: 10, currency_code: "USD" } for $10.00
+  google.type.Money amount = 4;
+  // request_timestamp is the time at which client made the request
+  google.protobuf.Timestamp request_timestamp = 5;
+  // idempotency_key is unique key for ensuring the same transaction isn't processed twice.
+  // Example: SHA256(request_timestamp + client_id + debit_account_id + credit_account_id + amount)
+  // Notes:
+  // - This ensures multiple valid transactions with same accounts/amounts are treated separately.
+  // - Retries of the same request should use the same key to avoid duplicate transactions.
+  string idempotency_key = 6;
+}
+
+// Response message for a created transaction
+message CreateTransactionResponse {
+  // transaction_id is unique transaction identifier
+  string transaction_id = 1;
+  // transaction_status is the status of the transaction. It is usually INIT upon creation
+  TransactionStatus transaction_status = 2; // Status immediately after creation (usually PENDING)
+}
