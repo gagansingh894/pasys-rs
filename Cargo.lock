@@ -3,6 +3,21 @@
 version = 3
 
 [[package]]
+name = "accounts"
+version = "0.1.0"
+
+[[package]]
+name = "accounts-proto"
+version = "0.1.0"
+dependencies = [
+ "prost",
+ "prost-types",
+ "tonic",
+ "tonic-build",
+ "tonic-reflection",
+]
+
+[[package]]
 name = "addr2line"
 version = "0.24.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -435,10 +450,6 @@ name = "ledger-consumer"
 version = "0.1.0"
 
 [[package]]
-name = "ledger-core"
-version = "0.1.0"
-
-[[package]]
 name = "ledger-proto"
 version = "0.1.0"
 dependencies = [
@@ -528,6 +539,14 @@ checksum = "42f5e15c9953c5e4ccceeb2e7382a716482c34515315f7b03532b8b4e8393d2d"
 
 [[package]]
 name = "pasys"
+version = "0.1.0"
+
+[[package]]
+name = "pasys-api"
+version = "0.1.0"
+
+[[package]]
+name = "pasys-core"
 version = "0.1.0"
 
 [[package]]
@@ -1008,10 +1027,6 @@ checksum = "b9d12581f227e93f094d3af2ae690a574abb8a2b9b7a96e7cfe9647b2b617678"
 dependencies = [
  "once_cell",
 ]
-
-[[package]]
-name = "transactions-api"
-version = "0.1.0"
 
 [[package]]
 name = "try-lock"

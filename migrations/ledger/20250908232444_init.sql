@@ -1,11 +1,6 @@
 CREATE TABLE accounts (
-                          id UUID PRIMARY KEY,
-                          client_id UUID NOT NULL,
-                          name TEXT,
-                          account_type TEXT,
-                          currency CHAR(3) NOT NULL,
-                          created_at TIMESTAMP WITH TIME ZONE,
-                          updated_at TIMESTAMP WITH TIME ZONE
+                          id UUID PRIMARY KEY,            -- Account ID (from Accounts service)
+                          account_type TEXT NOT NULL      -- 'CUSTOMER', 'MERCHANT', 'SYSTEM'
 );
 
 CREATE TABLE transactions (
@@ -45,4 +40,4 @@ CREATE TABLE transaction_events (
 -- Indexes
 CREATE INDEX idx_transactions_client ON transactions(client_id);
 CREATE INDEX idx_ledger_entries_account ON ledger_entries(account_id);
-CREATE INDEX idx_transaction_events_transaction ON transaction_events(transaction_id);
+CREATE INDEX idx_transaction_events_transaction ON transaction_events(transaction_id);-- Add migration script here

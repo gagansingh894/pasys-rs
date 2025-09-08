@@ -1,3 +1,15 @@
 [workspace]
 
-members = [ "fraud-detector", "ledger", "ledger-consumer", "ledger-core", "ledger-proto","pasys", "refund-processor", "settlement-processor", "transactions-api"]
+members = [
+    "accounts",
+    "accounts-proto",
+    "fraud-detector",
+    "ledger",
+    "ledger-consumer",
+    "ledger-proto",
+    "pasys",
+    "pasys-api",
+    "pasys-core",
+    "refund-processor",
+    "settlement-processor",
+    ]

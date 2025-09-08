@@ -12,12 +12,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .join("proto");
 
     // Paths to proto files
-    let proto_file = proto_root.join("pasys/v1/ledger.proto");
+    let proto_file = proto_root.join("pasys/v1/accounts.proto");
 
     tonic_build::configure()
         .build_server(true)
         .build_client(true)
-        .file_descriptor_set_path(out_dir.join("ledger_v1_descriptor.bin"))
+        .file_descriptor_set_path(out_dir.join("accounts_v1_descriptor.bin"))
         .out_dir(&out_dir)
         .compile(
             &[proto_file.to_str().unwrap()],
