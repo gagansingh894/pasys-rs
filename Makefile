@@ -68,3 +68,20 @@ run-migrations: migrate-accounts migrate-ledger
 # Generate protobufs into ledger-proto/gen/
 generate-proto:
 	cd $(PROTO_DIR) && buf mod update && buf generate
+
+lint:
+	@echo "Linting all projects with cargo"
+	@rustup component add clippy 2> /dev/null
+	cargo clippy --package  pasys-core --all-targets --all-features -- -D warnings
+
+nextest:
+	@echo "Testing all projects with cargo nextest"
+	cargo nextest run --release -p pasys-core --retries 2
+
+watch:
+	@echo "Starting cargo watch with cargo nextest"
+	cargo watch -x check -x 'nextest run --release -p pasys-core --retries 2'
+
+test:
+	@echo "Testing all projects with cargo test"
+	cargo test
