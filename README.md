@@ -180,7 +180,6 @@ flowchart TD
 
 ## Project Structure
 
-- `pasys-core` – library crate with core ledger logic: accounts, transactions, balances, idempotency, validation.
 - `pasys-api` – HTTP service exposed to external clients and applications.
 - `accounts-proto`: library crate for generated rust code for protos defined in `proto/paysys/v1/accounts.proto`
 - `ledger-proto`: library crate for generated rust code for protos defined in `proto/paysys/v1/ledger.proto`
