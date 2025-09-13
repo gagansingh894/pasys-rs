@@ -12,5 +12,5 @@ pub struct Entry {
     pub entry_type: Type,
     pub amount_minor: i64,
     pub currency: String,
-    pub created_at: chrono::DateTime<chrono::Utc>
+    pub created_at: chrono::DateTime<chrono::Utc>,
 }

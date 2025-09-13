@@ -6,7 +6,7 @@ pub enum Status {
     Failed,
     Fraud,
     Refund,
-    Refunded
+    Refunded,
 }
 
 #[derive(Debug, Clone)]
