@@ -3,13 +3,13 @@
 members = [
     "accounts",
     "accounts-proto",
+    "common",
     "fraud-detector",
     "ledger",
     "ledger-consumer",
     "ledger-proto",
     "pasys",
     "pasys-api",
-    "pasys-core",
     "refund-processor",
     "settlement-processor",
     ]
