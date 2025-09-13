@@ -1,9 +1,0 @@
-[package]
-name = "pasys-core"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-chrono = "0.4.40"
-anyhow = "1.0.97"
-uuid = { version = "1.18.1", features = ["v4"] }
