@@ -1,13 +1,17 @@
+use std::sync::Arc;
 use crate::domain::account::{Account, Status, Type};
-use crate::repo::PgAccountRepository;
+use crate::repo::AccountRepository;
 
-#[derive(Clone, Debug)]
-pub struct AccountsService {
-    repo: PgAccountRepository,
+pub struct AccountsService<R>
+where
+    R: AccountRepository,
+{
+    repo: R,
 }
 
-impl AccountsService {
-    pub fn new(repo: PgAccountRepository) -> Self {
+impl <R>AccountsService<R> where
+R: AccountRepository,{
+    pub fn new(repo: R) -> Self {
         Self { repo }
     }
 
