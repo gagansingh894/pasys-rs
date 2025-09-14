@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+package events_v1;
+
+message Fraud {
+  // transaction_id is the unique identifier for the transaction
+  string transaction_id = 1;
+  // idempotency_key is unique key for ensuring the same transaction isn't processed twice.
+  // Example: SHA256(request_timestamp + client_id + debit_account_id + credit_account_id + amount)
+  // Notes:
+  // - This ensures multiple valid transactions with same accounts/amounts are treated separately.
+  // - Retries of the same request should use the same key to avoid duplicate transactions.
+  string idempotency_key = 2;
+  // is_fraud is flag to determine whether transaction is fraud or not
+  bool is_fraud = 3;
+  // score is the score given my ML model. It's range is between 0 to 1. A higher score means higher confidence in transaction being fraud.
+  float score = 4;
+  // details is an optional field which provides details about why it was flagged as fraud
+  optional string details = 5;
+  // create_at is the timestamp at which this event was created
+  google.protobuf.Timestamp created_at = 6;
+}
