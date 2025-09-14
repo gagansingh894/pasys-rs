@@ -1,6 +1,6 @@
-use std::sync::Arc;
 use crate::domain::account::{Account, Status, Type};
 use crate::repo::AccountRepository;
+use std::sync::Arc;
 
 pub struct AccountsService<R>
 where
@@ -9,8 +9,10 @@ where
     repo: R,
 }
 
-impl <R>AccountsService<R> where
-R: AccountRepository,{
+impl<R> AccountsService<R>
+where
+    R: AccountRepository,
+{
     pub fn new(repo: R) -> Self {
         Self { repo }
     }

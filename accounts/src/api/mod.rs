@@ -1,15 +1,16 @@
+use crate::repo::AccountRepository;
 use crate::service::AccountsService;
 use accounts_proto::accounts_v1::accounts_server::Accounts;
 use accounts_proto::accounts_v1::{
     CreateAccountRequest, CreateAccountResponse, GetAccountsRequest, GetAccountsResponse,
 };
 use async_trait::async_trait;
-use crate::repo::AccountRepository;
 
 #[async_trait]
-impl <R >Accounts for AccountsService<R>
+impl<R> Accounts for AccountsService<R>
 where
-    R: AccountRepository,{
+    R: AccountRepository,
+{
     async fn health_check(
         &self,
         request: tonic::Request<()>,
