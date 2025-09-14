@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+package events_v1;
+
+// AccountStatus represents the current lifecycle state of an account.
+enum AccountStatus {
+  ACCOUNT_STATUS_UNSPECIFIED = 0;  // Default value, should not be used.
+  ACCOUNT_STATUS_ACTIVE = 1;       // Account is active and can be used.
+  ACCOUNT_STATUS_FROZEN = 2;       // Account is temporarily frozen.
+  ACCOUNT_STATUS_CLOSED = 3;       // Account has been closed permanently.
+}
+
+// AccountType represents the type/category of the account.
+enum AccountType {
+  ACCOUNT_TYPE_UNSPECIFIED = 0;   // Default value, should not be used.
+  ACCOUNT_TYPE_CUSTOMER = 1;      // Account belongs to a customer.
+  ACCOUNT_TYPE_MERCHANT = 2;      // Account belongs to a merchant.
+  ACCOUNT_TYPE_SYSTEM = 3;        // System-owned account for internal use.
+}
+
+// Account represents a single account entity in the system.
+message Account {
+  string id = 1;                     // Unique identifier for the account.
+  string name = 2;                   // Name of the account (not the owner).
+  AccountType type = 3;              // Type of the account.
+  AccountStatus status = 4;          // Current status of the account.
+  string created_by = 5;             // Identifier of the entity that created the account.
+  google.protobuf.Timestamp created_at = 6; // Timestamp when the account was created.
+  google.protobuf.Timestamp updated_at = 7; // Timestamp when the account was last updated.
+}

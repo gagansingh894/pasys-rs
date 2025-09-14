@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+import "googleapis/google/type/money.proto";
+
+package events_v1;
+
+enum Status {
+  STATUS_UNSPECIFIED = 0;           // Default value, should not be used in practice
+  STATUS_INIT = 1;                  // Transaction created but not yet processed
+  STATUS_PENDING = 2;               // Transaction is pending settlement with PSP
+  STATUS_SUCCESS = 3;               // Transaction completed successfully
+  STATUS_FAILED = 4;                // Transaction failed due to validation, insufficient funds, or PSP error
+}
+
+enum ReconciliationResult {
+  RESULT_UNSPECIFIED = 0;
+  RESULT_MATCHED = 1;       // Ledger and PSP agree
+  RESULT_MISMATCH = 2;      // Ledger and PSP disagree
+}
+
+message Reconciliation {
+  // id is unique identifier for reconciliation
+  string id = 1;
+  // transaction_id is the unique identifier for the transaction
+  string transaction_id = 2;
+  // status defines current ledger status
+  Status ledger_status = 3;
+  // external_status defines status reported by external service (PSP)
+  Status external_status = 4;
+  // amount specifies amount in ledger. It also includes currency.
+  google.type.Money ledger_amount = 5;
+  // amount specifies amount reported by external system. It also includes currency.
+  google.type.Money external_system_amount = 6;
+  ReconciliationResult result = 7;
+  // create_at is the timestamp at which this event was created
+  google.protobuf.Timestamp created_at = 8;
+}

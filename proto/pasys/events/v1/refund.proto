@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+import "googleapis/google/type/money.proto";
+import "google/protobuf/timestamp.proto";
+
+package events_v1;
+
+message Refund {
+  // id is unique identifier for refund transaction
+  string id = 1;
+  // transaction_id is the unique identifier for the transaction
+  string transaction_id = 2;
+  // idempotency_key is unique key for ensuring the same transaction isn't processed twice.
+  // Example: SHA256(request_timestamp + client_id + debit_account_id + credit_account_id + amount)
+  // Notes:
+  // - This ensures multiple valid transactions with same accounts/amounts are treated separately.
+  // - Retries of the same request should use the same key to avoid duplicate transactions.
+  string idempotency_key = 3;
+  // debit_account_id is  unique identifier (UUID) for debit account from which money is being debited
+  string debit_account_id = 4;
+  // debit_account_id is  unique identifier (UUID) for debit account from which money is being credited
+  string credit_account_id = 5;
+  // amount specifies the settled amount. It also includes currency.
+  google.type.Money amount = 6;
+  // create_at is the timestamp at which this event was created
+  google.protobuf.Timestamp created_at = 7;
+
+}

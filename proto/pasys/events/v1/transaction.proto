@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+import "googleapis/google/type/money.proto";
+import "google/protobuf/timestamp.proto";
+
+package events_v1;
+
+// Enum for the transaction status
+enum TransactionStatus {
+  TRANSACTION_STATUS_UNSPECIFIED = 0;           // Default value, should not be used in practice
+  TRANSACTION_STATUS_INIT = 1;                  // Transaction created but not yet processed
+  TRANSACTION_STATUS_PENDING = 2;               // Transaction is pending settlement with PSP
+  TRANSACTION_STATUS_SUCCESS = 3;               // Transaction completed successfully
+  TRANSACTION_STATUS_FAILED = 4;                // Transaction failed due to validation, insufficient funds, or PSP error
+  TRANSACTION_STATUS_FRAUD = 5;                 // Transaction flagged as potential fraud
+  TRANSACTION_STATUS_REFUND = 6;                // Refund process initiated
+  TRANSACTION_STATUS_REFUNDED = 7;              // Refund successfully completed
+}
+
+message Transaction {
+  // id is the unique identifier (UUID) for the transaction
+  string id = 1;
+  // client_id is used to identify the client
+  string client_id = 2;
+  // idempotency_key is unique key for ensuring the same transaction isn't processed twice.
+  // Example: SHA256(request_timestamp + client_id + debit_account_id + credit_account_id + amount)
+  // Notes:
+  // - This ensures multiple valid transactions with same accounts/amounts are treated separately.
+  // - Retries of the same request should use the same key to avoid duplicate transactions.
+  string idempotency_key = 3;
+  // debit_account_id is  unique identifier (UUID) for debit account from which money is being debited
+  string debit_account_id = 4;
+  // debit_account_id is  unique identifier (UUID) for debit account from which money is being credited
+  string credit_account_id = 5;
+  // amount is the amount transferred in the transaction. It also includes currency.
+  // Example: { units: 10, currency_code: "USD" } for $10.00
+  google.type.Money amount = 6;
+  // transaction_status is the status of the transaction. It is usually INIT upon creation
+  TransactionStatus status = 7;
+  // request_timestamp is the time at which client made the request
+  google.protobuf.Timestamp request_timestamp = 8;
+  // created_at is the time at which this event is created.
+  google.protobuf.Timestamp created_at = 9;
+}

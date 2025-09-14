@@ -3,7 +3,7 @@
 members = [
     "accounts",
     "accounts-proto",
-    "common",
+    "common", "events-proto",
     "fraud-detector",
     "ledger",
     "ledger-consumer",
