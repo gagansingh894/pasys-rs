@@ -4,3 +4,12 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+uuid = { version = "1.18.1", features = ["v4"] }
+chrono = "0.4.42"
+async-trait = "0.1.89"
+ledger-proto = {path = "../ledger-proto"}
+common = {path = "../common"}
+tonic = "0.11.0"
+tokio = "1.47.1"
+anyhow = "1.0.99"
+tonic-reflection = "0.11.0"
