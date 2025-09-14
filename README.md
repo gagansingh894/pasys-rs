@@ -181,8 +181,9 @@ flowchart TD
 ## Project Structure
 
 - `pasys-api` – HTTP service exposed to external clients and applications.
-- `accounts-proto`: library crate for generated rust code for protos defined in `proto/paysys/v1/accounts.proto`
-- `ledger-proto`: library crate for generated rust code for protos defined in `proto/paysys/v1/ledger.proto`
+- `accounts-proto`: library crate for generated rust code for protos defined in `proto/paysys/services/accounts/v1/accounts.proto`
+- `ledger-proto`: library crate for generated rust code for protos defined in `proto/paysys/services/ledger/v1/ledger.proto`
+- `events-proto`: library crate for generated rust code for event protos defined in `proto/paysys/events/v1/*.proto`
 - `accounts`: gRPC accounts service for account management using `accounts-proto` and `pasysy-core` 
 - `ledger` – gRPC ledger service using `ledger-proto` and `pasys-core`.
 - `ledger-consumer` – kafka consumer applying asynchronous events to the ledger database.
