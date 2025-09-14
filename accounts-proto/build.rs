@@ -12,7 +12,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .join("proto");
 
     // Paths to proto files
-    let proto_file = proto_root.join("pasys/v1/accounts.proto");
+    let proto_file = proto_root.join("pasys/services/accounts/v1/accounts.proto");
 
     tonic_build::configure()
         .build_server(true)
