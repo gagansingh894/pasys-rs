@@ -8,10 +8,9 @@ message Fraud {
   // transaction_id is the unique identifier for the transaction
   string transaction_id = 1;
   // idempotency_key is unique key for ensuring the same transaction isn't processed twice.
-  // Example: SHA256(request_timestamp + client_id + debit_account_id + credit_account_id + amount)
-  // Notes:
-  // - This ensures multiple valid transactions with same accounts/amounts are treated separately.
-  // - Retries of the same request should use the same key to avoid duplicate transactions.
+  // It is set by upstream service and is of the form - SHA256(create_transaction_id + request_timestamp + debit_account_id + credit_account_id + amount)
+  // This ensures multiple valid transactions with same accounts/amounts are treated separately.
+  // Retries of the same request should use the same key to avoid duplicate transactions.
   string idempotency_key = 2;
   // is_fraud is flag to determine whether transaction is fraud or not
   bool is_fraud = 3;
