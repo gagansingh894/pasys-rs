@@ -29,7 +29,7 @@ enum TransactionStatus {
 
 // Request message for creating a transaction
 message CreateTransactionRequest {
-  // id is client-provided ID for tracking (not idempotency)
+  // id is the unique identifier for the request
   string id = 1;
   // debit_account_id is the ledger account from which money is being debited (source of funds)
   string debit_account_id = 2;
@@ -41,7 +41,7 @@ message CreateTransactionRequest {
   // request_timestamp is the time at which client made the request
   google.protobuf.Timestamp request_timestamp = 5;
   // idempotency_key is unique key for ensuring the same transaction isn't processed twice.
-  // Example: SHA256(request_timestamp + client_id + debit_account_id + credit_account_id + amount)
+  // Example: SHA256(id + request_timestamp + debit_account_id + credit_account_id + amount)
   // Notes:
   // - This ensures multiple valid transactions with same accounts/amounts are treated separately.
   // - Retries of the same request should use the same key to avoid duplicate transactions.
@@ -50,7 +50,7 @@ message CreateTransactionRequest {
 
 // Response message for a created transaction
 message CreateTransactionResponse {
-  // transaction_id is unique transaction identifier
+  // transaction_id is unique transaction identifier. It is different compared to id in CreateTransactionRequest
   string transaction_id = 1;
   // transaction_status is the status of the transaction. It is usually INIT upon creation
   TransactionStatus transaction_status = 2; // Status immediately after creation (usually PENDING)
