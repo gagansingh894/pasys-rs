@@ -15,4 +15,4 @@ tonic-reflection = "0.14.1"
 tonic-prost = "0.14.1"
 prost-types = "0.14.1"
 tokio = { version = "1.47.1", features = ["rt", "rt-multi-thread", "macros"] }
-sqlx = { version ="0.6.3", features = ["runtime-tokio-native-tls", "postgres", "time", "uuid", "macros", "offline", "chrono"] }
+sqlx = { version ="0.8.0", features = ["runtime-tokio-native-tls", "postgres", "time", "uuid", "macros", "chrono"] }
