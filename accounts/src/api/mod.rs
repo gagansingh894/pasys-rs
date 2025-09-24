@@ -7,6 +7,7 @@ use accounts_proto::accounts_v1::{
     GetAccountsResponse,
 };
 use async_trait::async_trait;
+use prost_types::Timestamp;
 
 #[async_trait]
 impl<R> Accounts for AccountsService<R>
@@ -59,8 +60,14 @@ where
                     Status::Closed => Status::Active as i32,
                 },
                 created_by: account.created_by,
-                created_at: None, // todo: fix parsing of time to proto time
-                updated_at: None, // todo: fix parsing of time to proto time
+                created_at: Some(Timestamp {
+                    seconds: account.created_at.timestamp(),
+                    nanos: account.created_at.timestamp_subsec_nanos() as i32,
+                }),
+                updated_at: Some(Timestamp {
+                    seconds: account.updated_at.timestamp(),
+                    nanos: account.updated_at.timestamp_subsec_nanos() as i32,
+                }),
             },
             Err(e) => {
                 return Err(tonic::Status::new(
