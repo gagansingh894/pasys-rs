@@ -14,12 +14,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Paths to proto files
     let proto_file = proto_root.join("pasys/services/ledger/v1/ledger.proto");
 
-    tonic_build::configure()
+    tonic_prost_build::configure()
         .build_server(true)
         .build_client(true)
         .file_descriptor_set_path(out_dir.join("ledger_v1_descriptor.bin"))
         .out_dir(&out_dir)
-        .compile(
+        .compile_protos(
             &[proto_file.to_str().unwrap()],
             &[proto_root.to_str().unwrap()],
         )?;

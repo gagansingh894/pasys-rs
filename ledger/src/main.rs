@@ -30,7 +30,7 @@ async fn main() -> anyhow::Result<()> {
     // setup reflection service
     let reflection_service = tonic_reflection::server::Builder::configure()
         .register_encoded_file_descriptor_set(FILE_DESCRIPTOR_SET)
-        .build()?;
+        .build_v1()?;
 
     // setup grpc server
     let port = env::var("PORT")
