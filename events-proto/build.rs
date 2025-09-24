@@ -19,9 +19,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let event_proto_settlement_file = proto_root.join("pasys/events/v1/settlement.proto");
     let event_proto_transaction_file = proto_root.join("pasys/events/v1/transaction.proto");
 
-    tonic_build::configure()
+    tonic_prost_build::configure()
         .out_dir(&out_dir)
-        .compile(
+        .compile_protos(
             &[
                 event_proto_account_file.clone(),
                 event_proto_refund_file.clone(),
@@ -30,7 +30,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 event_proto_settlement_file.clone(),
                 event_proto_transaction_file.clone(),
             ],
-            &[proto_root.to_str().unwrap()],
+            &[proto_root.clone()],
         )?;
 
     let protos = vec![
@@ -45,7 +45,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     for proto in &protos {
         println!("cargo:rerun-if-changed={}", proto.display());
     }
-    println!("cargo:rerun-if-changed={}", proto_root.display());
+    println!("cargo:rerun-if-changed={}", proto_root.clone().display());
 
     Ok(())
 }

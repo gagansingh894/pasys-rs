@@ -1,7 +1,7 @@
 [package]
 name = "accounts"
 version = "0.1.0"
-edition = "2021"
+edition = "2024"
 
 [dependencies]
 uuid = { version = "1.18.1", features = ["v4"] }
@@ -10,6 +10,9 @@ common = {path = "../common"}
 async-trait = "0.1.89"
 anyhow = "1.0.99"
 accounts-proto = {path = "../accounts-proto"}
-tonic = "0.11"
-tonic-reflection = "0.11.0"
+tonic = "0.14.1"
+tonic-reflection = "0.14.1"
+tonic-prost = "0.14.1"
+prost-types = "0.14.1"
 tokio = { version = "1.47.1", features = ["rt", "rt-multi-thread", "macros"] }
+sqlx = { version ="0.8.0", features = ["runtime-tokio-native-tls", "postgres", "time", "uuid", "macros", "chrono"] }
