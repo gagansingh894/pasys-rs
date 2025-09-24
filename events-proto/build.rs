@@ -19,17 +19,19 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let event_proto_settlement_file = proto_root.join("pasys/events/v1/settlement.proto");
     let event_proto_transaction_file = proto_root.join("pasys/events/v1/transaction.proto");
 
-    tonic_prost_build::configure().out_dir(&out_dir).compile_protos(
-        &[
-            event_proto_account_file.clone(),
-            event_proto_refund_file.clone(),
-            event_proto_reconciliation_file.clone(),
-            event_proto_fraud_file.clone(),
-            event_proto_settlement_file.clone(),
-            event_proto_transaction_file.clone(),
-        ],
-        &[proto_root.clone()],
-    )?;
+    tonic_prost_build::configure()
+        .out_dir(&out_dir)
+        .compile_protos(
+            &[
+                event_proto_account_file.clone(),
+                event_proto_refund_file.clone(),
+                event_proto_reconciliation_file.clone(),
+                event_proto_fraud_file.clone(),
+                event_proto_settlement_file.clone(),
+                event_proto_transaction_file.clone(),
+            ],
+            &[proto_root.clone()],
+        )?;
 
     let protos = vec![
         event_proto_transaction_file,
