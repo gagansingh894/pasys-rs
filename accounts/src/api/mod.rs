@@ -3,8 +3,8 @@ use crate::repo::AccountRepository;
 use crate::service::AccountsService;
 use accounts_proto::accounts_v1::accounts_server::Accounts;
 use accounts_proto::accounts_v1::{
-    Account, AccountType, CreateAccountRequest, CreateAccountResponse, GetAccountsRequest,
-    GetAccountsResponse,
+    Account, AccountType, CreateAccountRequest, CreateAccountResponse, GetAccountRequest, GetAccountsRequest,
+    GetAccountResponse, GetAccountsResponse,
 };
 use async_trait::async_trait;
 use prost_types::Timestamp;
@@ -87,5 +87,43 @@ where
         request: tonic::Request<GetAccountsRequest>,
     ) -> Result<tonic::Response<GetAccountsResponse>, tonic::Status> {
         todo!()
+    }
+
+    async fn get_account(
+        &self,
+        request: tonic::Request<GetAccountRequest>,
+    ) -> Result<tonic::Response<GetAccountResponse>, tonic::Status> {
+        let request = request.into_inner();
+        let account = match self.get_account_by_id(request.account_id.as_str()).await {
+            Ok(account) => Account{
+                id: account.id.to_string(),
+                name: account.name.to_string(),
+                r#type: match account.account_type {
+                    Type::Customer => AccountType::Customer as i32,
+                    Type::Merchant => AccountType::Merchant as i32,
+                    Type::System => AccountType::System as i32,
+                },
+                status: match account.account_status {
+                    Status::Active => Status::Active as i32,
+                    Status::Frozen => Status::Active as i32,
+                    Status::Closed => Status::Active as i32,
+                },
+                created_by: account.created_by,
+                created_at: Some(Timestamp {
+                    seconds: account.created_at.timestamp(),
+                    nanos: account.created_at.timestamp_subsec_nanos() as i32,
+                }),
+                updated_at: Some(Timestamp {
+                    seconds: account.updated_at.timestamp(),
+                    nanos: account.updated_at.timestamp_subsec_nanos() as i32,
+                }),
+            },
+            Err(e) => { return Err(tonic::Status::new(
+                tonic::Code::Internal,
+                format!("failed to get account: {}", e),
+            ))}
+        };
+
+        Ok(tonic::Response::new(GetAccountResponse {account: Some(account)}))
     }
 }
