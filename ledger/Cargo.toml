@@ -9,7 +9,8 @@ chrono = "0.4.42"
 async-trait = "0.1.89"
 ledger-proto = {path = "../ledger-proto"}
 common = {path = "../common"}
-tonic = "0.11.0"
+tonic = "0.14.1"
 tokio = "1.47.1"
 anyhow = "1.0.99"
-tonic-reflection = "0.11.0"
+tonic-reflection = "0.14.1"
+tonic-prost = "0.14.1"
