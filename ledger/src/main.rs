@@ -1,8 +1,8 @@
 use common::shutdown;
 use ledger::repo::PgLedgerRepository;
 use ledger::service::LedgerService;
-use ledger_proto::ledger_v1::ledger_server::LedgerServer;
 use ledger_proto::ledger_v1::FILE_DESCRIPTOR_SET;
+use ledger_proto::ledger_v1::ledger_server::LedgerServer;
 use std::env;
 use tonic::codegen::tokio_stream::wrappers::TcpListenerStream;
 use tonic::transport::Server;
