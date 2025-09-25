@@ -1,16 +1,16 @@
-use crate::domain::account::{Status, Type};
+mod parsers;
+
+use crate::api::parsers::{parse_account_to_proto, parse_to_domain_account_type};
+use crate::domain;
 use crate::repo::AccountRepository;
 use crate::service::AccountsService;
-use accounts_proto::accounts_v1::accounts_server::Accounts;
-use accounts_proto::accounts_v1::{
-    Account, AccountType, CreateAccountRequest, CreateAccountResponse, GetAccountRequest, GetAccountsRequest,
-    GetAccountResponse, GetAccountsResponse,
-};
+
+use accounts_proto::accounts_v1;
+
 use async_trait::async_trait;
-use prost_types::Timestamp;
 
 #[async_trait]
-impl<R> Accounts for AccountsService<R>
+impl<R> accounts_v1::accounts_server::Accounts for AccountsService<R>
 where
     R: AccountRepository,
 {
@@ -23,22 +23,14 @@ where
 
     async fn create_account(
         &self,
-        request: tonic::Request<CreateAccountRequest>,
-    ) -> Result<tonic::Response<CreateAccountResponse>, tonic::Status> {
+        request: tonic::Request<accounts_v1::CreateAccountRequest>,
+    ) -> Result<tonic::Response<accounts_v1::CreateAccountResponse>, tonic::Status> {
         let request = request.into_inner();
 
         // parse account_type to domain
-        let account_type = match request.r#type {
-            0 => {
-                return Err(tonic::Status::invalid_argument(format!(
-                    "{} is not a valid account type",
-                    request.r#type
-                )))
-            }
-            1 => Type::Customer,
-            2 => Type::Merchant,
-            3 => Type::System,
-            _ => return Err(tonic::Status::invalid_argument("invalid account type")),
+        let account_type = match parse_to_domain_account_type(request.r#type) {
+            Ok(t) => t,
+            Err(e) => return Err(tonic::Status::invalid_argument(e.to_string())),
         };
 
         // call account service to create account
@@ -46,29 +38,7 @@ where
             .create_account(request.name, account_type, request.created_by)
             .await
         {
-            Ok(account) => Account {
-                id: account.id.to_string(),
-                name: account.name,
-                r#type: match account.account_type {
-                    Type::Customer => AccountType::Customer as i32,
-                    Type::Merchant => AccountType::Merchant as i32,
-                    Type::System => AccountType::System as i32,
-                },
-                status: match account.account_status {
-                    Status::Active => Status::Active as i32,
-                    Status::Frozen => Status::Active as i32,
-                    Status::Closed => Status::Active as i32,
-                },
-                created_by: account.created_by,
-                created_at: Some(Timestamp {
-                    seconds: account.created_at.timestamp(),
-                    nanos: account.created_at.timestamp_subsec_nanos() as i32,
-                }),
-                updated_at: Some(Timestamp {
-                    seconds: account.updated_at.timestamp(),
-                    nanos: account.updated_at.timestamp_subsec_nanos() as i32,
-                }),
-            },
+            Ok(account) => parse_account_to_proto(account),
             Err(e) => {
                 return Err(tonic::Status::new(
                     tonic::Code::Internal,
@@ -77,53 +47,35 @@ where
             }
         };
 
-        Ok(tonic::Response::new(CreateAccountResponse {
+        Ok(tonic::Response::new(accounts_v1::CreateAccountResponse {
             account: Some(account),
         }))
     }
 
     async fn get_accounts(
         &self,
-        request: tonic::Request<GetAccountsRequest>,
-    ) -> Result<tonic::Response<GetAccountsResponse>, tonic::Status> {
+        request: tonic::Request<accounts_v1::GetAccountsRequest>,
+    ) -> Result<tonic::Response<accounts_v1::GetAccountsResponse>, tonic::Status> {
         todo!()
     }
 
     async fn get_account(
         &self,
-        request: tonic::Request<GetAccountRequest>,
-    ) -> Result<tonic::Response<GetAccountResponse>, tonic::Status> {
+        request: tonic::Request<accounts_v1::GetAccountRequest>,
+    ) -> Result<tonic::Response<accounts_v1::GetAccountResponse>, tonic::Status> {
         let request = request.into_inner();
         let account = match self.get_account_by_id(request.account_id.as_str()).await {
-            Ok(account) => Account{
-                id: account.id.to_string(),
-                name: account.name.to_string(),
-                r#type: match account.account_type {
-                    Type::Customer => AccountType::Customer as i32,
-                    Type::Merchant => AccountType::Merchant as i32,
-                    Type::System => AccountType::System as i32,
-                },
-                status: match account.account_status {
-                    Status::Active => Status::Active as i32,
-                    Status::Frozen => Status::Active as i32,
-                    Status::Closed => Status::Active as i32,
-                },
-                created_by: account.created_by,
-                created_at: Some(Timestamp {
-                    seconds: account.created_at.timestamp(),
-                    nanos: account.created_at.timestamp_subsec_nanos() as i32,
-                }),
-                updated_at: Some(Timestamp {
-                    seconds: account.updated_at.timestamp(),
-                    nanos: account.updated_at.timestamp_subsec_nanos() as i32,
-                }),
-            },
-            Err(e) => { return Err(tonic::Status::new(
-                tonic::Code::Internal,
-                format!("failed to get account: {}", e),
-            ))}
+            Ok(account) => parse_account_to_proto(account),
+            Err(e) => {
+                return Err(tonic::Status::new(
+                    tonic::Code::Internal,
+                    format!("failed to get account: {}", e),
+                ));
+            }
         };
 
-        Ok(tonic::Response::new(GetAccountResponse {account: Some(account)}))
+        Ok(tonic::Response::new(accounts_v1::GetAccountResponse {
+            account: Some(account),
+        }))
     }
 }
