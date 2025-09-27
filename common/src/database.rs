@@ -35,4 +35,11 @@ impl Database {
             writer: writer_pool,
         })
     }
+
+    pub async fn from_pool(pool: PgPool) -> anyhow::Result<Self> {
+        Ok(Self {
+            reader: pool.clone(),
+            writer: pool,
+        })
+    }
 }
