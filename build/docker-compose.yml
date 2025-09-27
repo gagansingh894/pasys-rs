@@ -11,13 +11,13 @@ services:
     environment:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=user123
-      - POSTGRES_DB=ledger_db
+      - POSTGRES_DB=ledger
     ports:
       - "5432:5432"
     networks:
       - pasys
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d ledger_db"]
+      test: ["CMD-SHELL", "pg_isready -U user -d ledger"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -31,13 +31,13 @@ services:
     environment:
       - POSTGRES_USER=user
       - POSTGRES_PASSWORD=user123
-      - POSTGRES_DB=accounts_db
+      - POSTGRES_DB=accounts
     ports:
       - "5433:5432"
     networks:
       - pasys
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d ledger_db"]
+      test: ["CMD-SHELL", "pg_isready -U user -d accounts"]
       interval: 5s
       timeout: 5s
       retries: 5

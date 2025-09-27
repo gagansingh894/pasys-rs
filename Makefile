@@ -84,4 +84,4 @@ watch:
 
 test:
 	@echo "Testing all projects with cargo test"
-	cargo test
+	cargo test --release -p accounts
