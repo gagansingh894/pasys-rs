@@ -1,11 +1,9 @@
-use std::fmt::{Display, Formatter};
-
-#[derive(Debug, Clone, sqlx::Type)]
+#[derive(Debug, Clone, PartialEq, sqlx::Type)]
 #[sqlx(type_name = "account_status", rename_all = "lowercase")]
 pub enum Status {
-    Active,
-    Frozen,
-    Closed,
+    Active = 1,
+    Frozen = 2,
+    Closed = 3,
 }
 
 impl AsRef<str> for Status {
@@ -18,12 +16,12 @@ impl AsRef<str> for Status {
     }
 }
 
-#[derive(Debug, Clone, sqlx::Type)]
+#[derive(Debug, Clone, PartialEq, sqlx::Type)]
 #[sqlx(type_name = "account_type", rename_all = "lowercase")]
 pub enum Type {
-    Customer,
-    Merchant,
-    System,
+    Customer = 1,
+    Merchant = 2,
+    System = 3,
 }
 
 impl AsRef<str> for Type {
@@ -36,7 +34,7 @@ impl AsRef<str> for Type {
     }
 }
 
-#[derive(Debug, Clone, sqlx::FromRow)]
+#[derive(Debug, Clone, PartialEq, sqlx::FromRow)]
 pub struct Account {
     pub id: uuid::Uuid,
     pub name: String,

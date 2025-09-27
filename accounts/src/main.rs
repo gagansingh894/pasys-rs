@@ -1,7 +1,7 @@
 use accounts::repo;
 use accounts::service::AccountsService;
 use accounts::{DEFAULT_READER_MAX_CONN, DEFAULT_TIMEOUT_SECONDS, DEFAULT_WRITER_MAX_CONN};
-use accounts_proto::accounts_v1::{accounts_server, FILE_DESCRIPTOR_SET};
+use accounts_proto::accounts_v1::{FILE_DESCRIPTOR_SET, accounts_server};
 use common::{database, shutdown};
 use std::env;
 use tonic::codegen::tokio_stream::wrappers::TcpListenerStream;

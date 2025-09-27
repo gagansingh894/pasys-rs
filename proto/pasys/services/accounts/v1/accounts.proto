@@ -16,6 +16,9 @@ service Accounts {
 
   // GetAccounts retrieves a list of accounts by their IDs.
   rpc GetAccounts(GetAccountsRequest) returns (GetAccountsResponse);
+
+  // GetAccount retrieves account by it's ID
+  rpc GetAccount(GetAccountRequest) returns (GetAccountResponse);
 }
 
 // AccountStatus represents the current lifecycle state of an account.
@@ -59,10 +62,26 @@ message CreateAccountResponse {
 
 // GetAccountsRequest is used to fetch multiple accounts by IDs.
 message GetAccountsRequest {
-  repeated string account_ids = 1;   // List of account IDs to retrieve.
+  // Filter species what filters to applied when fetching accounts from database
+  message Filter {
+    repeated string account_ids = 1;   // List of account IDs to retrieve.
+    AccountType account_type = 2;
+    AccountStatus account_status = 3;
+  }
+
+  Filter filter = 1;
 }
 
 // GetAccountsResponse contains the list of accounts returned by GetAccountsRequest.
 message GetAccountsResponse {
   repeated Account accounts = 1;     // Accounts matching the requested IDs.
+}
+
+message GetAccountRequest {
+  string account_id = 1;
+}
+
+// GetAccountResponse contains the account returned.
+message GetAccountResponse {
+  Account account = 1;     // Account matching the requested IDs.
 }

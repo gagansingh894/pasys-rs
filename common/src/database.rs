@@ -1,6 +1,6 @@
 use anyhow;
-use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
+use sqlx::postgres::PgPoolOptions;
 use std::time::Duration;
 
 pub struct Config {
@@ -33,6 +33,13 @@ impl Database {
         Ok(Self {
             reader: reader_pool,
             writer: writer_pool,
+        })
+    }
+
+    pub async fn from_pool(pool: PgPool) -> anyhow::Result<Self> {
+        Ok(Self {
+            reader: pool.clone(),
+            writer: pool,
         })
     }
 }
