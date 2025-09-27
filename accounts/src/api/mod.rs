@@ -1,7 +1,6 @@
 mod parsers;
 
 use crate::api::parsers::{parse_account_to_proto, parse_to_domain_account_type};
-use crate::domain;
 use crate::repo::AccountRepository;
 use crate::service::AccountsService;
 
@@ -16,7 +15,7 @@ where
 {
     async fn health_check(
         &self,
-        request: tonic::Request<()>,
+        _request: tonic::Request<()>,
     ) -> Result<tonic::Response<()>, tonic::Status> {
         Ok(tonic::Response::new(()))
     }
@@ -54,7 +53,7 @@ where
 
     async fn get_accounts(
         &self,
-        request: tonic::Request<accounts_v1::GetAccountsRequest>,
+        _request: tonic::Request<accounts_v1::GetAccountsRequest>,
     ) -> Result<tonic::Response<accounts_v1::GetAccountsResponse>, tonic::Status> {
         todo!()
     }

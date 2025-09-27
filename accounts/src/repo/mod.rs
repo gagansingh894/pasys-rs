@@ -11,7 +11,7 @@ pub struct PgAccountRepository {
 }
 
 impl PgAccountRepository {
-    pub fn new(db: Database) -> impl AccountRepository {
+    pub fn new(db: Database) -> Self {
         Self { db }
     }
 }
