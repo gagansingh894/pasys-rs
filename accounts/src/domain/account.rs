@@ -1,5 +1,3 @@
-use std::fmt::{Display, Formatter};
-
 #[derive(Debug, Clone, sqlx::Type)]
 #[sqlx(type_name = "account_status", rename_all = "lowercase")]
 pub enum Status {
