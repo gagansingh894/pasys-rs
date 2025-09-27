@@ -53,11 +53,13 @@ jobs:
       - name: Cache Rust dependencies
         uses: Swatinem/rust-cache@v2
 
+      - name: Install sqlx-cli
+        run: cargo install sqlx-cli --no-default-features --features postgres
+
       - name: Run migrations
-        working-directory: ./migrations/accounts
-        run: |
-          cargo install sqlx-cli --no-default-features --features postgres
-          sqlx migrate run
+        env:
+          ACCOUNTS_DB_URL: postgres://user:user123@localhost:5433/accounts_db
+        run: make migrate-accounts
 
       - name: Lint
         run: make lint
