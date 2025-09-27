@@ -4,7 +4,7 @@ use tokio::net::TcpListener;
 use tonic::codegen::tokio_stream::wrappers::TcpListenerStream;
 
 #[tokio::test]
-async fn successfully_calls_the_create_account_rpc_and_retriece_account_using_get_account_rpc() {
+async fn successfully_calls_the_create_account_rpc_and_retrieve_account_using_get_account_rpc() {
     // arrange
     let listener = TcpListener::bind("0.0.0.0:0").await.unwrap();
     let addr = listener.local_addr().unwrap();
