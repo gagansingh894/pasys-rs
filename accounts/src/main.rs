@@ -9,6 +9,9 @@ use tonic::transport::Server;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
+    // Set up a subscriber to print logs to stdout
+    tracing_subscriber::fmt::init();
+
     // setup database
     let database_config = database::Config {
         reader_url: env::var("READER_DATABASE_URL").expect("READER_DATABASE_URL must be set"),
@@ -38,6 +41,13 @@ async fn main() -> anyhow::Result<()> {
     let listener = tokio::net::TcpListener::bind(address)
         .await
         .expect("Failed to create TCP listener ❌");
+
+    // log that the server is running
+    tracing::info!(
+        "{}",
+        format!("Server is running on http://0.0.0.0:{} 🚀 \n", port)
+    );
+
     Server::builder()
         .add_service(reflection_service)
         // add accounts service to accounts server
