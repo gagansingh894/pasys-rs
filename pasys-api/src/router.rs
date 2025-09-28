@@ -1,17 +1,21 @@
 use crate::accounts;
-use crate::state::{AppState, Config};
+use crate::config::Config;
+use crate::state::AppState;
 use axum::Router;
-use std::env;
 use std::sync::Arc;
+use axum::http::StatusCode;
+use axum::routing::get;
 
-async fn _router() -> Router {
-    let config = Config {
-        accounts_host: env::var("ACCOUNTS_HOST").expect("ACCOUNTS_HOST must be set"),
-    };
-
+pub(crate) async fn router(config: Config) -> Router {
     let app_state = AppState::new(config).await;
 
     Router::new()
+        // nest accounts router
+        .route("/api", get(healthcheck))
         .nest("/api", accounts::router::router())
         .with_state(Arc::new(app_state))
+}
+
+async fn healthcheck() -> StatusCode {
+    StatusCode::OK
 }
