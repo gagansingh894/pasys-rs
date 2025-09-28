@@ -1,6 +1,7 @@
 use crate::accounts::models::{
-    Account, CreateAccountRequest, CreateAccountResponse, ErrorResponse, GetAccountResponse,
+    CreateAccountRequest, CreateAccountResponse, ErrorResponse, GetAccountResponse,
 };
+use crate::accounts::parsers::parse_account_proto;
 use crate::helpers::map_grpc_code_to_http;
 use crate::state::AppState;
 use axum::Json;
@@ -36,23 +37,20 @@ pub async fn create_account(
         .await
     {
         Ok(resp) => match resp.into_inner().account {
-            Some(account) => {
-                let account = Account {
-                    id: account.id,
-                    name: "".to_string(),
-                    account_type: "".to_string(),
-                    account_status: "".to_string(),
-                    created_by: "".to_string(),
-                    created_at: "".to_string(),
-                    updated_at: "".to_string(),
-                };
-                Ok((
+            Some(account) => match parse_account_proto(account) {
+                Ok(account) => Ok((
                     StatusCode::OK,
                     Json(CreateAccountResponse {
                         account: Some(account),
                     }),
-                ))
-            }
+                )),
+                Err(err) => {
+                    let resp = ErrorResponse {
+                        error: err.to_string(),
+                    };
+                    Err((StatusCode::INTERNAL_SERVER_ERROR, Json(resp)))
+                }
+            },
             None => Ok((
                 StatusCode::INTERNAL_SERVER_ERROR,
                 Json(CreateAccountResponse { account: None }),
@@ -61,7 +59,7 @@ pub async fn create_account(
         Err(err) => {
             let status = map_grpc_code_to_http(err.code());
             let resp = ErrorResponse {
-                error: "".to_string(),
+                error: "failed to create account".to_string(),
             };
             Err((status, Json(resp)))
         }
@@ -74,27 +72,26 @@ pub async fn get_account(
 ) -> Result<(StatusCode, Json<GetAccountResponse>), (StatusCode, Json<ErrorResponse>)> {
     let mut accounts_client = app_state.accounts_client.clone();
     match accounts_client
-        .get_account(accounts_proto::accounts_v1::GetAccountRequest { account_id: id })
+        .get_account(accounts_proto::accounts_v1::GetAccountRequest {
+            account_id: id.clone(),
+        })
         .await
     {
         Ok(resp) => match resp.into_inner().account {
-            Some(account) => {
-                let account = Account {
-                    id: account.id,
-                    name: "".to_string(),
-                    account_type: "".to_string(),
-                    account_status: "".to_string(),
-                    created_by: "".to_string(),
-                    created_at: "".to_string(),
-                    updated_at: "".to_string(),
-                };
-                Ok((
+            Some(account) => match parse_account_proto(account) {
+                Ok(account) => Ok((
                     StatusCode::OK,
                     Json(GetAccountResponse {
                         account: Some(account),
                     }),
-                ))
-            }
+                )),
+                Err(err) => {
+                    let resp = ErrorResponse {
+                        error: err.to_string(),
+                    };
+                    Err((StatusCode::INTERNAL_SERVER_ERROR, Json(resp)))
+                }
+            },
             None => Ok((
                 StatusCode::INTERNAL_SERVER_ERROR,
                 Json(GetAccountResponse { account: None }),
@@ -103,7 +100,7 @@ pub async fn get_account(
         Err(err) => {
             let status = map_grpc_code_to_http(err.code());
             let resp = ErrorResponse {
-                error: "".to_string(),
+                error: format!("failed to get account: {}", id),
             };
             Err((status, Json(resp)))
         }
