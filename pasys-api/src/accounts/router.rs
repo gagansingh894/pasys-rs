@@ -7,5 +7,5 @@ use std::sync::Arc;
 pub fn router() -> Router<Arc<AppState>> {
     Router::new()
         .route("/account", post(create_account))
-        .route("/account/:id", get(get_account))
+        .route("/account/{id}", get(get_account))
 }
