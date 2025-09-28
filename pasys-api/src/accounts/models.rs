@@ -17,7 +17,7 @@ pub struct GetAccountResponse {
     pub account: Option<Account>,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, Debug, PartialEq)]
 pub struct Account {
     pub id: String,
     pub name: String,
