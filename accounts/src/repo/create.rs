@@ -26,7 +26,10 @@ impl AccountWriter for PgAccountRepository {
 
         match result {
             Ok(account) => Ok(account),
-            Err(e) => anyhow::bail!("Failed to insert into database: {e}"),
+            Err(e) => {
+                tracing::error!("Failed to insert into database: {e}");
+                anyhow::bail!("Failed to insert into database: {e}")
+            },
         }
     }
 }
