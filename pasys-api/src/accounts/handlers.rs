@@ -8,7 +8,9 @@ use axum::Json;
 use axum::extract::{Path, State};
 use axum::http::StatusCode;
 use std::sync::Arc;
+use tracing::instrument;
 
+#[instrument(skip(app_state, payload))]
 pub async fn create_account(
     State(app_state): State<Arc<AppState>>,
     Json(payload): Json<CreateAccountRequest>,
@@ -66,6 +68,7 @@ pub async fn create_account(
     }
 }
 
+#[instrument(skip(app_state), fields(account_id = %id))]
 pub async fn get_account(
     State(app_state): State<Arc<AppState>>,
     Path(id): Path<String>,
