@@ -1333,12 +1333,15 @@ dependencies = [
  "accounts-proto",
  "anyhow",
  "axum",
+ "chrono",
  "common",
+ "prost-types",
  "serde",
  "tokio",
  "tonic",
  "tracing",
  "tracing-subscriber",
+ "uuid",
 ]
 
 [[package]]
