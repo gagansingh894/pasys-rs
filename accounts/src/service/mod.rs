@@ -1,5 +1,6 @@
 use crate::domain::account::{Account, Status, Type};
 use crate::repo::AccountRepository;
+use tracing::instrument;
 
 #[derive(Debug, Clone)]
 pub struct AccountsService<R>
@@ -17,6 +18,7 @@ where
         Self { repo }
     }
 
+    #[instrument(skip(self, name, created_by))]
     pub async fn create_account(
         &self,
         name: impl Into<String>,
@@ -28,33 +30,40 @@ where
         match self.repo.create_account(&account).await {
             Ok(account) => Ok(account),
             Err(e) => {
+                tracing::error!("Failed to create account: {e}");
                 anyhow::bail!("Failed to create_account: {:?}", e);
             }
         }
     }
 
+    #[instrument(skip(self, id))]
     pub async fn get_account_by_id(&self, id: &str) -> anyhow::Result<Account> {
         match self.repo.get_account_by_id(id).await {
             Ok(account) => Ok(account),
             Err(e) => {
+                tracing::error!("Failed to get account: {e}");
                 anyhow::bail!("Failed to get_account_by_id: {:?}", e);
             }
         }
     }
 
+    #[instrument(skip(self, account_type))]
     pub async fn get_accounts_by_type(&self, account_type: Type) -> anyhow::Result<Vec<Account>> {
         match self.repo.get_accounts_by_type(account_type).await {
             Ok(accounts) => Ok(accounts),
             Err(e) => {
+                tracing::error!("Failed to get accounts: {e}");
                 anyhow::bail!("Failed to get_accounts_by_type: {:?}", e);
             }
         }
     }
 
+    #[instrument(skip(self, status))]
     pub async fn get_accounts_by_status(&self, status: Status) -> anyhow::Result<Vec<Account>> {
         match self.repo.get_accounts_by_status(status).await {
             Ok(accounts) => Ok(accounts),
             Err(e) => {
+                tracing::error!("Failed to get accounts: {e}");
                 anyhow::bail!("Failed to get_accounts_by_status: {:?}", e);
             }
         }
