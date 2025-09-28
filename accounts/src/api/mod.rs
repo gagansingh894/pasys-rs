@@ -33,7 +33,8 @@ where
             Ok(t) => t,
             Err(e) => {
                 tracing::error!("failed to parse_to_domain_account_type: {}", e);
-                return Err(tonic::Status::invalid_argument(e.to_string()))},
+                return Err(tonic::Status::invalid_argument(e.to_string()));
+            }
         };
 
         // call account service to create account
@@ -73,7 +74,11 @@ where
         let account = match self.get_account_by_id(request.account_id.as_str()).await {
             Ok(account) => parse_account_to_proto(account),
             Err(e) => {
-                tracing::error!("failed to get account {}: {}", request.account_id.as_str(), e);
+                tracing::error!(
+                    "failed to get account {}: {}",
+                    request.account_id.as_str(),
+                    e
+                );
                 return Err(tonic::Status::new(
                     tonic::Code::Internal,
                     format!("failed to get account: {}", e),

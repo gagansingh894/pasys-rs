@@ -1,6 +1,6 @@
-use tracing::instrument;
 use crate::domain::account::{Account, Status, Type};
 use crate::repo::AccountRepository;
+use tracing::instrument;
 
 #[derive(Debug, Clone)]
 pub struct AccountsService<R>
