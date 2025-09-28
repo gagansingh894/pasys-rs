@@ -5,8 +5,11 @@ edition = "2024"
 
 [dependencies]
 accounts-proto = {path = "../accounts-proto"}
+common = {path = "../common"}
 axum = "0.8.0"
 tokio = { version = "1.47.1", features = ["rt", "rt-multi-thread", "macros"] }
 anyhow = "1.0.99"
 tonic = "0.14.1"
 serde = { version =  "1.0.225", features = ["derive"] }
+tracing = "0.1.41"
+tracing-subscriber = "0.3.20"
