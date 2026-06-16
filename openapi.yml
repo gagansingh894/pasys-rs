@@ -1,0 +1,145 @@
+openapi: 3.0.3
+info:
+  title: PaSys Accounts API
+  description: API for interacting with the PaSys accounts service
+  version: 0.1.0
+
+paths:
+  /api/accounts/healthcheck:
+    get:
+      summary: Healthcheck endpoint for Accounts service
+      responses:
+        '200':
+          description: Service is up
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "OK"
+
+  /api/account:
+    post:
+      summary: Create a new account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: "John Doe"
+                type:
+                  type: string
+                  enum: [CUSTOMER, MERCHANT, SYSTEM]
+                  example: CUSTOMER
+                created_by:
+                  type: string
+                  example: "system-admin"
+      responses:
+        '200':
+          description: Account creation successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  account:
+                    $ref: '#/components/schemas/Account'
+        '400':
+          description: Invalid request
+        '500':
+          description: Internal server error
+
+    get:
+      summary: Fetch a single account by ID
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: string
+            format: uuid
+          required: true
+          description: Account ID
+      responses:
+        '200':
+          description: Account retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  account:
+                    $ref: '#/components/schemas/Account'
+        '404':
+          description: Account not found
+        '500':
+          description: Internal server error
+
+  /api/accounts:
+    get:
+      summary: Fetch multiple accounts with optional filters
+      parameters:
+        - in: query
+          name: account_ids
+          schema:
+            type: array
+            items:
+              type: string
+              format: uuid
+          description: List of account IDs to fetch
+        - in: query
+          name: type
+          schema:
+            type: string
+            enum: [CUSTOMER, MERCHANT, SYSTEM]
+          description: Filter by account type
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [ACTIVE, FROZEN, CLOSED]
+          description: Filter by account status
+      responses:
+        '200':
+          description: Accounts retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accounts:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Account'
+        '500':
+          description: Internal server error
+
+components:
+  schemas:
+    Account:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        type:
+          type: string
+          enum: [CUSTOMER, MERCHANT, SYSTEM]
+        status:
+          type: string
+          enum: [ACTIVE, FROZEN, CLOSED]
+        created_by:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time

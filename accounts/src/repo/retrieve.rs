@@ -26,9 +26,11 @@ impl AccountReader for PgAccountRepository {
         match result {
             Ok(account) => Ok(account),
             Err(sqlx::Error::RowNotFound) => {
+                tracing::error!("Account {id} not found");
                 anyhow::bail!("Account {id} not found")
             }
             Err(e) => {
+                tracing::error!("Failed to get_account_by_id: {e}");
                 anyhow::bail!("Failed to get_account_by_id: {e}")
             }
         }
@@ -49,9 +51,11 @@ impl AccountReader for PgAccountRepository {
         match result {
             Ok(accounts) => Ok(accounts),
             Err(sqlx::Error::RowNotFound) => {
+                tracing::error!("No accounts found with type: {:?}", account_type.as_ref());
                 anyhow::bail!("No accounts found with type: {:?}", account_type.as_ref())
             }
             Err(e) => {
+                tracing::error!("Failed to get_accounts_by_type: {e}");
                 anyhow::bail!("Failed to get_accounts_by_type: {e}")
             }
         }
@@ -72,9 +76,11 @@ impl AccountReader for PgAccountRepository {
         match result {
             Ok(accounts) => Ok(accounts),
             Err(sqlx::Error::RowNotFound) => {
+                tracing::error!("No accounts found with status: {:?}", status.as_ref());
                 anyhow::bail!("No accounts found with status: {:?}", status.as_ref())
             }
             Err(e) => {
+                tracing::error!("Failed to get_accounts_by_status: {e}");
                 anyhow::bail!("Failed to get_accounts_by_status: {e}")
             }
         }

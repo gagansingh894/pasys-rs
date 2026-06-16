@@ -72,11 +72,7 @@ generate-proto:
 lint:
 	@echo "Linting all projects with cargo"
 	@rustup component add clippy 2> /dev/null
-	cargo clippy --package  accounts --all-targets --all-features -- -D warnings
-
-nextest:
-	@echo "Testing all projects with cargo nextest"
-	cargo nextest run --release -p accounts --retries 2
+	cargo clippy -p accounts -p common -p pasys-api  --all-targets --all-features -- -D warnings -A dead_code
 
 watch:
 	@echo "Starting cargo watch with cargo nextest"
@@ -84,4 +80,4 @@ watch:
 
 test:
 	@echo "Testing all projects with cargo test"
-	cargo test --release -p accounts
+	cargo test --release -p accounts -p common -p pasys-api
